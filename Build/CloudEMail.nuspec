@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>CloudEMail</id>
+        <version>1.0.0</version>
+        <title>Amazon E-Mail Wrapper</title>
+        <authors>Squadron 5 South</authors>
+        <owners>Kansas City Life Insurance Company</owners>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>A wrapper for the AWS Simple Email Service</description>
+    </metadata>
+    <files>
+        <file src="..\AmazonEmail\bin\Release\CloudEmail.dll" target="lib\net35\CloudEmail.dll" />
+    </files>
+</package>

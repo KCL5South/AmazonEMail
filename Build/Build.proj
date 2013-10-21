@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+
+	<PropertyGroup>
+		<Configuration Condition=" '$(Configuration)' == '' ">DEBUG</Configuration>
+		<AssemblyMajorVersion Condition=" '$(AssemblyMajorVersion)' == '' ">1</AssemblyMajorVersion>
+		<AssemblyMinorVersion Condition=" '$(AssemblyMinorVersion)' == '' ">0</AssemblyMinorVersion>
+		<AssemblyBuildVersion Condition=" '$(AssemblyBuildVersion)' == '' ">0</AssemblyBuildVersion>
+		<AssemblyRevisionVersion Condition=" '$(AssemblyRevisionVersion)' == '' ">0</AssemblyRevisionVersion>
+		<AssemblyFinalVersion>$(AssemblyMajorVersion).$(AssemblyMinorVersion).$(AssemblyBuildVersion).$(AssemblyRevisionVersion)</AssemblyFinalVersion>
+		<NuGetAPIKey></NuGetAPIKey>
+		<NuGetPushDestination Condition=" '$(NuGetPushDestination)' == '' ">https://www.ikclife.com/KCLNuGetFeed/</NuGetPushDestination>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectsToBuild Include="NuGet.targets"/>
+		<ProjectsToBuild Include="UpdateAssemblyInfo.targets"/>
+		<ProjectsToBuild Include="..\AmazonEmail.sln"/>
+		<NuSpec Include="CloudEMail.nuspec"/>
+		<NuPkg Include="CloudEMail.nupkg" />
+	</ItemGroup>	
+
+	<Target Name="Build">
+		<MSBuild Projects="@(ProjectsToBuild)" />
+	</Target>
+
+	<Target Name="Deploy" DependsOnTargets="Build">
+		<Error Condition=" '$(NuGetAPIKey)' == '' " Text="You must supply an API Key to push packages to NuGet." />
+		<Exec Command="nuget pack %(NuSpec.Identity) -Version $(AssemblyFinalVersion)" />	
+		<Exec Command="nuget push %(NuPkg.Identity) -s $(NuGetPushDestination) $(NuGetAPIKey)"/>
+		<Delete Files="@(NuPkg)" />
+	</Target>
+</Project>

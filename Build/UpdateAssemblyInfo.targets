@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="UpdateAssemblyInfo" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+	
+	<PropertyGroup>
+		<AssemblyMajorVersion Condition=" '$(AssemblyMajorVersion)' == '' ">1</AssemblyMajorVersion>
+		<AssemblyMinorVersion Condition=" '$(AssemblyMinorVersion)' == '' ">0</AssemblyMinorVersion>
+		<AssemblyBuildVersion Condition=" '$(AssemblyBuildVersion)' == '' ">0</AssemblyBuildVersion>
+		<AssemblyRevisionVersion Condition=" '$(AssemblyRevisionVersion)' == '' ">0</AssemblyRevisionVersion>
+		<AssemblyFinalVersion>$(AssemblyMajorVersion).$(AssemblyMinorVersion).$(AssemblyBuildVersion).$(AssemblyRevisionVersion)</AssemblyFinalVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<AssemblyInfoFiles Include="..\**\AssemblyInfo.cs" />
+	</ItemGroup>
+
+	<UsingTask AssemblyFile="$(MSBuildThisFileDirectory)..\packages\MSBuild.Extension.Pack\lib\net35\MSBuild.ExtensionPack.dll" TaskName="MSBuild.ExtensionPack.Framework.AssemblyInfo"/>
+
+	<Target Name="UpdateAssemblyInfo">
+		<Message Text="%(AssemblyInfoFiles.Identity): $(AssemblyFinalVersion)" />
+		<MSBuild.ExtensionPack.Framework.AssemblyInfo 	AssemblyInfoFiles="%(AssemblyInfoFiles.Identity)" 
+														AssemblyVersion="$(AssemblyFinalVersion)"
+														AssemblyFileVersion="$(AssemblyFinalVersion)"/>
+	</Target>
+
+</Project>
