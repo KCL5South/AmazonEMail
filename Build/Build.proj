@@ -17,7 +17,7 @@
 		<ProjectsToBuild Include="UpdateAssemblyInfo.targets"/>
 		<ProjectsToBuild Include="..\AmazonEmail.sln"/>
 		<NuSpec Include="CloudEMail.nuspec"/>
-		<NuPkg Include="CloudEMail.nupkg" />
+		<NuPkg Include="*.nupkg" />
 	</ItemGroup>	
 
 	<Target Name="Build">
@@ -26,7 +26,7 @@
 
 	<Target Name="Deploy" DependsOnTargets="Build">
 		<Error Condition=" '$(NuGetAPIKey)' == '' " Text="You must supply an API Key to push packages to NuGet." />
-		<Exec Command="nuget pack %(NuSpec.Identity) -Version $(AssemblyFinalVersion)" />	
+		<Exec Command="nuget pack %(NuSpec.Identity) -Version &quot;$(AssemblyFinalVersion)&quot;" />	
 		<Exec Command="nuget push %(NuPkg.Identity) -s $(NuGetPushDestination) $(NuGetAPIKey)"/>
 		<Delete Files="@(NuPkg)" />
 	</Target>
