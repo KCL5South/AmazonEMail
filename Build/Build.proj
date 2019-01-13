@@ -32,7 +32,7 @@
 			<NuPkg Include="*.nupkg" />
 		</ItemGroup>
 		<Error Condition=" '$(NuGetAPIKey)' == '' " Text="You must supply an API Key to push packages to NuGet." />
-		<Exec Command="nuget push %(NuPkg.Identity) -s $(NuGetPushDestination) $(NuGetAPIKey)"/>
+		<Exec Command="nuget push %(NuPkg.Identity) -source $(NuGetPushDestination) $(NuGetAPIKey)"/>
 	</Target>
 
 	<Target Name="CleanNuGet">
