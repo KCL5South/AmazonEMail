@@ -1,21 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Amazon;
-using Amazon.EC2;
-using Amazon.EC2.Model;
-using Amazon.SimpleDB;
-using Amazon.SimpleDB.Model;
-using Amazon.S3;
-using Amazon.S3.Model;
-using Amazon.SimpleEmail.Model;
-using System.Net.Mail;
-using System.IO;
-using Amazon.SimpleEmail;
-using System.Reflection;
+﻿using Amazon.SimpleEmail.Model;
+using System;
 using System.Collections;
-using System.Net.Mime;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Mail;
+using System.Reflection;
+using System.Text;
 
 
 namespace CloudEmail
@@ -31,12 +22,15 @@ namespace CloudEmail
         /// <param name="Content">Text for e-mail</param>
         public void SendEmail(string AWSAccessKey, string AWSSecretKey, string ToEmail, string FromEmail, string Subject, string Content)
         {
-            Amazon.SimpleEmail.AmazonSimpleEmailServiceClient client = new Amazon.SimpleEmail.AmazonSimpleEmailServiceClient(AWSAccessKey, AWSSecretKey);
+            Amazon.SimpleEmail.AmazonSimpleEmailServiceClient client = new Amazon.SimpleEmail.AmazonSimpleEmailServiceClient(AWSAccessKey, AWSSecretKey, Amazon.RegionEndpoint.USEast1);
 
             SendEmailRequest em = new SendEmailRequest()
-                            .WithDestination(new Destination() { BccAddresses = new List<String>() { ToEmail } })
-                            .WithSource(FromEmail)
-                            .WithMessage(new Message(new Content(Subject), new Body().WithText(new Content(Content))));
+            {
+                Destination = (new Destination() { BccAddresses = new List<String>() { ToEmail } }),
+                Source = FromEmail,
+                Message = new Message(new Content(Subject), new Body() { Text = new Content(Content) })
+            };
+
             SendEmailResponse response = client.SendEmail(em);
         }
 
@@ -49,12 +43,15 @@ namespace CloudEmail
         /// <param name="Html">Html for e-mail</param>
         public void SendHTMLEmail(string AWSAccessKey, string AWSSecretKey, string ToEmail, string FromEmail, string Subject, String Html)
         {
-            Amazon.SimpleEmail.AmazonSimpleEmailServiceClient client = new Amazon.SimpleEmail.AmazonSimpleEmailServiceClient(AWSAccessKey, AWSSecretKey);
+            Amazon.SimpleEmail.AmazonSimpleEmailServiceClient client = new Amazon.SimpleEmail.AmazonSimpleEmailServiceClient(AWSAccessKey, AWSSecretKey, Amazon.RegionEndpoint.USEast1);
 
             SendEmailRequest em = new SendEmailRequest()
-                            .WithDestination(new Destination() { BccAddresses = new List<String>() { ToEmail } })
-                            .WithSource(FromEmail)
-                            .WithMessage(new Message(new Content(Subject), new Body().WithHtml(new Content(Html))));
+            {
+                Destination = new Destination() { BccAddresses = new List<String>() { ToEmail } },
+                Source = FromEmail,
+                Message = new Message(new Content(Subject), new Body() { Html = new Content(Html) })
+            };
+
             SendEmailResponse response = client.SendEmail(em);
         }
         
@@ -145,22 +142,21 @@ namespace CloudEmail
 
             using (MemoryStream memoryStream = ConvertMailMessageToMemoryStream(mailMessage))
             {
-                rawMessage.WithData(memoryStream);
+                rawMessage.Data = memoryStream;
             }
 
             SendRawEmailRequest request = new SendRawEmailRequest();
 
-            request.WithRawMessage(rawMessage);
+            request.RawMessage = rawMessage;
 
-            request.WithDestinations(toAddresses);
-            request.WithSource(From);
+            request.Destinations = toAddresses;
+            request.Source = From;
 
-            AmazonSimpleEmailService ses = AWSClientFactory.CreateAmazonSimpleEmailServiceClient(AWSAccessKey, AWSSecretKey);
+            Amazon.SimpleEmail.AmazonSimpleEmailServiceClient ses = new Amazon.SimpleEmail.AmazonSimpleEmailServiceClient(AWSAccessKey, AWSSecretKey, Amazon.RegionEndpoint.USEast1);
 
             try
             {
                 SendRawEmailResponse response = ses.SendRawEmail(request);
-                SendRawEmailResult result = response.SendRawEmailResult;
 
                 return true;
             }
@@ -224,22 +220,21 @@ namespace CloudEmail
 
             using (MemoryStream memoryStream = ConvertMailMessageToMemoryStream(mailMessage))
             {
-                rawMessage.WithData(memoryStream);
+                rawMessage.Data = memoryStream;
             }
 
             SendRawEmailRequest request = new SendRawEmailRequest();
 
-            request.WithRawMessage(rawMessage);
+            request.RawMessage = rawMessage;
 
-            request.WithDestinations(To.Select(a => a.Address));
-            request.WithSource(From.Address);
+            request.Destinations = To.Select(a => a.Address).ToList();
+            request.Source = From.Address;
 
-            AmazonSimpleEmailService ses = AWSClientFactory.CreateAmazonSimpleEmailServiceClient(AWSAccessKey, AWSSecretKey);
+            Amazon.SimpleEmail.AmazonSimpleEmailServiceClient ses = new Amazon.SimpleEmail.AmazonSimpleEmailServiceClient(AWSAccessKey, AWSSecretKey, Amazon.RegionEndpoint.USEast1);
 
             try
             {
                 SendRawEmailResponse response = ses.SendRawEmail(request);
-                SendRawEmailResult result = response.SendRawEmailResult;
 
                 return true;
             }

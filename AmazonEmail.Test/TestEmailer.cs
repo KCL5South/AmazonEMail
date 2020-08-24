@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using CloudEmail;
+﻿using CloudEmail;
 
 namespace AmazonEmail.Test
 {
@@ -14,7 +10,7 @@ namespace AmazonEmail.Test
             const string accessKey = "You need to provide these",
                          secretKey = "You need to provide these",
                          fromEmailer = "kcl-data@kclife.com",
-                         toEmail = "vmotley@kclife.com";
+                         toEmail = "drew.swick@kclife.com";
 
             string textBody = "Body Line1\nBody Line2\nBody Line3";
 
