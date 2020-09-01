@@ -260,7 +260,19 @@ namespace CloudEmail
 
 	        MethodInfo sendMethod = typeof(MailMessage).GetMethod("Send", BindingFlags.Instance | BindingFlags.NonPublic);
 
-	        sendMethod.Invoke(message, BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { mailWriter, true, true }, null);
+            Assembly assemblyMailMessage = typeof(MailMessage).Assembly;
+
+            // Rudimentary way to check for a .Net framework version number of the MailMessage that is being passed in by the code that hits this.
+            // There was a new parameter added in 4.5. This way can't tell the difference between 4.0 and 4.5, but since we don't have anything
+            // built for 4.0 and won't in the future I went with this route.
+            if (int.Parse(assemblyMailMessage.ImageRuntimeVersion.Substring(1, 1)) < 4)
+            {
+                sendMethod.Invoke(message, BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { mailWriter, true }, null);
+            }
+            else
+            {
+                sendMethod.Invoke(message, BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { mailWriter, true, true }, null);
+            }
 
 	        MethodInfo closeMethod = mailWriter.GetType().GetMethod("Close", BindingFlags.Instance | BindingFlags.NonPublic);
 
